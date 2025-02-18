@@ -1,3 +1,5 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_app/firebase_options.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'bootstrap/boot.dart';
 
@@ -6,6 +8,9 @@ import 'bootstrap/boot.dart';
 
 /// Main entry point for the application.
 void main() async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+);
   await Nylo.init(
     setup: Boot.nylo,
     setupFinished: Boot.finished,

@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:135236043527:android:157b50ebc88ab9b52dfba2",
+        "mobilesdk_app_id": "1:135236043527:android:9dab87537dc207ca2dfba2",
         "android_client_info": {
-          "package_name": "com.example.iotlistrik"
+          "package_name": "com.nylo.android"
         }
       },
       "oauth_client": [],
