@@ -1,173 +1,201 @@
-import '/resources/widgets/theme_toggle_widget.dart';
-import '/app/networking/api_service.dart';
-import '/bootstrap/extensions.dart';
-import '/resources/widgets/logo_widget.dart';
-import '/resources/widgets/safearea_widget.dart';
-import '/app/controllers/home_controller.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
-class HomePage extends NyStatefulWidget<HomeController> {
+class HomePage extends NyStatefulWidget {
   static RouteView path = ("/home", (_) => HomePage());
 
   HomePage({super.key}) : super(child: () => _HomePageState());
 }
 
 class _HomePageState extends NyPage<HomePage> {
-  int? _stars;
-
+  bool isRelayOn = true; // Default kondisi relay
   @override
-  get init => () async {
-    /// Uncomment the code below to fetch the number of stars for the Nylo repository
-    // Map<String, dynamic>? githubResponse = await api<ApiService>(
-    //         (request) => request.githubInfo(),
-    // );
-    // _stars = githubResponse?["stargazers_count"];
-  };
+  get init => () {};
 
-  /// Define the Loading style for the page.
-  /// Options: LoadingStyle.normal(), LoadingStyle.skeletonizer(), LoadingStyle.none()
-  /// uncomment the code below.
-  @override
-  LoadingStyle get loadingStyle => LoadingStyle.normal();
-
-  /// The [view] method displays your page.
   @override
   Widget view(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          showToastSuccess(title: "Hello 👋", description: "Welcome to Nylo");
-
-          // Uncomment the code below to send a push notifications
-          // await PushNotification.sendNotification(
-          //     title: "Hello 👋", body: "Welcome to Nylo",
-          // );
-        },
-        child: const Icon(Icons.notifications),
+      appBar: AppBar(
+        title: const Text("Realtime Monitoring"),
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
       ),
-      body: SafeAreaWidget(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Logo(),
-              Text(
-                getEnv("APP_NAME"),
-              ).displayMedium(color: context.color.content),
-              const Text("Micro-framework for Flutter", textAlign: TextAlign.center)
-                  .titleMedium(color: context.color.primaryAccent),
-              const Text("Build something amazing 💡", textAlign: TextAlign.center)
-                  .bodyMedium()
-                  .alignCenter(),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  const Divider(),
-                  Container(
-                    height: 250,
-                    width: double.infinity,
-                    margin:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                    padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                    decoration: BoxDecoration(
-                        color: context.color.surfaceBackground,
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withAlpha((255.0 * 0.1).round()),
-                            spreadRadius: 1,
-                            blurRadius: 9,
-                            offset: const Offset(0, 3),
-                          ),
-                        ]),
-                    child: Center(
-                      child: ListView(
-                        padding: EdgeInsets.zero,
-                        shrinkWrap: true,
-                        children: ListTile.divideTiles(context: context, tiles: [
-                          if (Nylo.containsRoute("/landing"))
-                            ListTile(
-                              leading: FaIcon(FontAwesomeIcons.rocket),
-                              title: Text(
-                                "Start building",
-                              ).bodyLarge(color: context.color.surfaceContent),
-                              subtitle: Text(
-                                "Your project is ready",
-                              ).bodySmall(color: context.color.surfaceContent),
-                              trailing: const Icon(Icons.chevron_right),
-                              onTap: () => routeTo("/landing"),
-                            ),
-                          ListTile(
-                            leading: FaIcon(FontAwesomeIcons.readme),
-                            title: Text(
-                              "Documentation",
-                            ).bodyLarge(color: context.color.surfaceContent),
-                            subtitle: Text(
-                              "Master the framework",
-                            ).bodySmall(color: context.color.surfaceContent),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: widget.controller.onTapDocumentation,
-                          ),
-                          ListTile(
-                            leading: FaIcon(FontAwesomeIcons.github),
-                            title: Text(
-                              "Github",
-                            ).bodyLarge(color: context.color.surfaceContent),
-                            subtitle: Text(
-                              _stars == null ? "Source code" : "$_stars Stars",
-                            ).bodySmall(color: context.color.surfaceContent),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: widget.controller.onTapGithub,
-                          ),
-                          ListTile(
-                            leading: FaIcon(FontAwesomeIcons.newspaper),
-                            title: Text(
-                              "Updates",
-                            ).bodyLarge(color: context.color.surfaceContent),
-                            subtitle: Text(
-                              "View the changelog",
-                            ).bodySmall(color: context.color.surfaceContent),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: widget.controller.onTapChangeLog,
-                          ),
-                          ListTile(
-                            leading: FaIcon(FontAwesomeIcons.youtube),
-                            title: Text(
-                              "YouTube Channel",
-                            ).bodyLarge(color: context.color.surfaceContent),
-                            subtitle: Text(
-                              "Tutorial videos",
-                            ).bodySmall(color: context.color.surfaceContent),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: widget.controller.onTapYouTube,
-                          ),
-                          ListTile(
-                            leading: FaIcon(FontAwesomeIcons.xTwitter),
-                            title: Text(
-                              "Follow us on X",
-                            ).bodyLarge(color: context.color.surfaceContent),
-                            subtitle: Text(
-                              "Stay updated",
-                            ).bodySmall(color: context.color.surfaceContent),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: widget.controller.onTapX,
-                          ),
-                        ]).toList(),
-                      ),
+              const Text(
+                "Energi total",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 150,
+                child: SfRadialGauge(axes: <RadialAxis>[
+                  RadialAxis(
+                    minimum: 0,
+                    maximum: 100,
+                    showLabels: false,
+                    showTicks: false,
+                    axisLineStyle: const AxisLineStyle(
+                      thickness: 0.15,
+                      cornerStyle: CornerStyle.bothCurve,
+                      color: Color.fromARGB(30, 0, 0, 0),
+                      thicknessUnit: GaugeSizeUnit.factor,
                     ),
-                  ),
-                  const Text(
-                    "Framework Version: $nyloVersion",
-                  ).bodyMedium().setColor(context, (color) => Colors.grey),
-                  ThemeToggle(),
-                ],
+                    pointers: <GaugePointer>[
+                      RangePointer(
+                        value: 3.14,
+                        width: 0.15,
+                        sizeUnit: GaugeSizeUnit.factor,
+                        gradient: const SweepGradient(
+                          colors: [Colors.pink, Colors.blue],
+                        ),
+                      )
+                    ],
+                    annotations: <GaugeAnnotation>[
+                      GaugeAnnotation(
+                        widget: const Text(
+                          '3,14 KWh',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        positionFactor: 0.1,
+                        angle: 90,
+                      )
+                    ],
+                  )
+                ]),
+              ),
+              const SizedBox(height: 20),
+              Expanded(
+                child: GridView.count(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  children: [
+                    _buildStatusCard("Volt", 30),
+                    _buildSwitchCard("Relay", isRelayOn),
+                    _buildStatusCard("Watt", 50),
+                    _buildStatusCard("Total Harga", 10000),
+                  ],
+                ),
               ),
             ],
-          )),
+          ),
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 0,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Beranda',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.analytics),
+            label: 'Analisis',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profil',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatusCard(String title, double value) {
+    return Card(
+      color: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 100,
+              child: SfRadialGauge(axes: <RadialAxis>[
+                RadialAxis(
+                  minimum: 0,
+                  maximum: 1000,
+                  showTicks: false,
+                  showLabels: false,
+                  axisLineStyle: const AxisLineStyle(
+                    thickness: 0.15,
+                    cornerStyle: CornerStyle.bothFlat,
+                    color: Color.fromARGB(30, 0, 0, 0),
+                    thicknessUnit: GaugeSizeUnit.factor,
+                  ),
+                  pointers: <GaugePointer>[
+                    RangePointer(
+                      value: value,
+                      width: 0.15,
+                      sizeUnit: GaugeSizeUnit.factor,
+                      gradient: const SweepGradient(
+                        colors: [Colors.pink, Colors.blue],
+                      ),
+                    )
+                  ],
+                  annotations: <GaugeAnnotation>[
+                    GaugeAnnotation(
+                      widget: Text(
+                        value.toString(),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      positionFactor: 0.1, // Menempatkan value di tengah
+                      angle: 90,
+                    ),
+                  ],
+                )
+              ]),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSwitchCard(String title, bool isOn) {
+    return Card(
+      color: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            Switch(
+              value: isOn,
+              activeColor: Colors.green,
+              activeTrackColor: Colors.green.shade300,
+              inactiveThumbColor: Colors.red,
+              inactiveTrackColor: Colors.red.shade300,
+              onChanged: (value) {
+                setState(() {
+                  isRelayOn = value;
+                });
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
