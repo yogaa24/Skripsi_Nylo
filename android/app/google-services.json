@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "135236043527",
+    "firebase_url": "https://iot-dd416-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "iot-dd416",
+    "storage_bucket": "iot-dd416.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:135236043527:android:157b50ebc88ab9b52dfba2",
+        "android_client_info": {
+          "package_name": "com.example.iotlistrik"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7D9Y0tn8Kw9io3KNO9ckGtUkRZ1H06vE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
