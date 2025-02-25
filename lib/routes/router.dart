@@ -1,5 +1,7 @@
-import '/resources/pages/profil_page.dart';
 import '/resources/pages/analisis_page.dart';
+import '/resources/pages/dahsboard_page.dart';
+import '/resources/pages/base_navigation_hub.dart';
+import '/resources/pages/profil_page.dart';
 import '/resources/pages/login_page.dart';
 import '/resources/pages/register_page.dart';
 import '/resources/pages/not_found_page.dart';
@@ -34,7 +36,9 @@ appRouter() => nyRoutes((router) {
       // });
       router.add(NotFoundPage.path).unknownRoute();
       router.add(RegisterPage.path);
-      router.add(LoginPage.path).initialRoute();
-  router.add(AnalisisPage.path);
-  router.add(ProfilPage.path);
+      router.add(LoginPage.path);
+      router.add(ProfilPage.path);
+      router.add(BaseNavigationHub.path).initialRoute();
+      router.add(DahsboardPage.path);
+      router.add(AnalisisPage.path);
 });
