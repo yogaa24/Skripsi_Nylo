@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -67,4 +64,16 @@ class DefaultFirebaseOptions {
     storageBucket: 'iot-dd416.firebasestorage.app',
     iosBundleId: 'com.nylo.ios',
   );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyBxn-4xOg_Sdwirvu8y_1k7gy0x6Df6K6I',
+    appId: '1:135236043527:web:cbe11b8520fb405f2dfba2',
+    messagingSenderId: '135236043527',
+    projectId: 'iot-dd416',
+    authDomain: 'iot-dd416.firebaseapp.com',
+    databaseURL: 'https://iot-dd416-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'iot-dd416.firebasestorage.app',
+    measurementId: 'G-HMFTV47NZ6',
+  );
+
 }

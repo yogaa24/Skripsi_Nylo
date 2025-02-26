@@ -1,22 +1,41 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_app/firebase_options.dart';
 import 'package:nylo_framework/nylo_framework.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'bootstrap/boot.dart';
 
-/// Nylo - Framework for Flutter Developers
-/// Docs: https://nylo.dev/docs/6.x
-
-/// Main entry point for the application.
 void main() async {
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-);
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Inisialisasi Firebase terlebih dahulu dengan pengecekan platform
+  if (!kIsWeb) {
+    // Untuk platform mobile/desktop
+    try {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    } catch (e) {
+      print('Firebase initialization error (native): $e');
+    }
+  }
+
+  // Inisialisasi Nylo
   await Nylo.init(
     setup: Boot.nylo,
-    setupFinished: Boot.finished,
-
-    // showSplashScreen: true,
-    // Uncomment showSplashScreen to show the splash screen
-    // File: lib/resources/widgets/splash_screen.dart
+    setupFinished: (Nylo nylo) async {
+      // Inisialisasi Firebase untuk web platform
+      if (kIsWeb) {
+        try {
+          await Firebase.initializeApp(
+            options: DefaultFirebaseOptions.currentPlatform,
+          );
+        } catch (e) {
+          print('Firebase initialization error (web): $e');
+        }
+      }
+      await Boot.finished(nylo); 
+    },
+    showSplashScreen: true,
   );
 }

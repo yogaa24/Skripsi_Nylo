@@ -1,29 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:intl/intl.dart';
-
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Analisis App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: AnalisisPage(),
-    );
-  }
-}
 
 class AnalisisPage extends NyStatefulWidget {
   static RouteView path = ("/analisis", (_) => AnalisisPage());
-
+  
   AnalisisPage({super.key}) : super(child: () => _AnalisisPageState());
 }
 
@@ -32,248 +13,324 @@ class _AnalisisPageState extends NyPage<AnalisisPage> {
 
   @override
   get init => () {
-        // Initialize any required data
-      };
-
-  Future<void> _selectDate(BuildContext context) async {
-    print("Date picker triggered"); // Debug print
-    try {
-      final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(), // Gunakan tanggal hari ini
-        firstDate: DateTime(2000), // Tahun minimal 2000
-        lastDate: DateTime(2025, 12, 31), // Ubah ke 31 Desember 2025
-        locale: const Locale('id', 'ID'),
-      );
-
-      if (picked != null && picked != selectedDate) {
-        setState(() {
-          selectedDate = picked;
-          print("Selected date: $picked"); // Debug print
-        });
-      }
-    } catch (e) {
-      print("Error showing date picker: $e"); // Debug print
-    }
-  }
+    // Initialize data or fetch from API
+  };
 
   @override
   Widget view(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Analisis"),
+        title: Text("Analisis"),
         centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 1,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Date picker button
-              Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () {
-                    print("Button tapped"); // Debug print
-                    _selectDate(context);
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.blue),
-                      borderRadius: BorderRadius.circular(8),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Date picker
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: InkWell(
+                    onTap: () => _selectDate(context),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Pilih tanggal',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          Icon(Icons.calendar_today),
+                        ],
+                      ),
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
+                  ),
+                ),
+                SizedBox(height: 24),
+                
+                // Usage graph
+                Card(
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          "Pilih tanggal: ${DateFormat('dd-MM-yyyy').format(selectedDate)}",
-                          style: TextStyle(color: Colors.blue),
+                        Container(
+                          height: 220,
+                          child: _buildUsageChart(),
                         ),
-                        const SizedBox(width: 8),
-                        Icon(Icons.calendar_today,
-                            color: Colors.blue, size: 20),
+                        SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Icon(Icons.info_outline, size: 18, color: Colors.grey),
+                            SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                'sumbu x mewakili tanggal\nsumbu y mewakili jenis penggunaan',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
                 ),
-              ),
-
-              const SizedBox(height: 24),
-
-              // Usage graph
-              SizedBox(
-                height: 300,
-                child: LineChart(
-                  LineChartData(
-                    gridData: FlGridData(show: true),
-                    titlesData: FlTitlesData(
-                      bottomTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          getTitlesWidget: (value, meta) {
-                            switch (value.toInt()) {
-                              case 0:
-                                return const Text('0');
-                              case 7:
-                                return const Text('07:00');
-                              case 12:
-                                return const Text('12:00');
-                              case 18:
-                                return const Text('18:00');
-                              case 22:
-                                return const Text('22:00');
-                              default:
-                                return const Text('');
-                            }
-                          },
+                
+                SizedBox(height: 24),
+                
+                // Usage table
+                Card(
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Tabel Penggunaan Kwh',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      leftTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          getTitlesWidget: (value, meta) {
-                            return Text(value.toStringAsFixed(1));
-                          },
+                        SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Icon(Icons.info_outline, size: 18, color: Colors.grey),
+                            SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                'Tabel ini menampilkan data analisis dari tabel yang di pilih.',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
+                        SizedBox(height: 16),
+                        _buildUsageTable(),
+                      ],
                     ),
-                    borderData: FlBorderData(show: true),
-                    lineBarsData: [
-                      LineChartBarData(
-                        spots: [
-                          const FlSpot(0, 0.4),
-                          const FlSpot(1, 0.35),
-                          const FlSpot(7, 0.38),
-                          const FlSpot(12, 0.45),
-                          const FlSpot(18, 0.35),
-                          const FlSpot(22, 0.2),
-                        ],
-                        isCurved: true,
-                        color: Colors.blue,
-                        barWidth: 2,
-                        dotData: FlDotData(show: false),
-                      ),
-                    ],
                   ),
                 ),
-              ),
-
-              const SizedBox(height: 24),
-
-              Text(
-                "Tabel Penggunaan Kwh",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Table(
-                border: TableBorder.all(),
-                columnWidths: const {
-                  0: FlexColumnWidth(2),
-                  1: FlexColumnWidth(1.5),
-                  2: FlexColumnWidth(1.5),
-                  3: FlexColumnWidth(1.5),
-                  4: FlexColumnWidth(2),
-                },
-                children: [
-                  const TableRow(
-                    children: [
-                      TableCell(
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Tanggal'),
-                        ),
-                      ),
-                      TableCell(
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Energi'),
-                        ),
-                      ),
-                      TableCell(
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Biaya'),
-                        ),
-                      ),
-                      TableCell(
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Daya'),
-                        ),
-                      ),
-                      TableCell(
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Total Penggunaan'),
-                        ),
-                      ),
-                    ],
-                  ),
-                  TableRow(
-                    children: [
-                      TableCell(
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('24-2-2025'),
-                        ),
-                      ),
-                      TableCell(
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('30 Kwh'),
-                        ),
-                      ),
-                      TableCell(
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('12.000'),
-                        ),
-                      ),
-                      TableCell(
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('200 v'),
-                        ),
-                      ),
-                      TableCell(
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Sedang'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Beranda',
+    );
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2026),
+    );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
+    }
+  }
+
+  Widget _buildUsageChart() {
+    return LineChart(
+      LineChartData(
+        gridData: FlGridData(
+          show: true,
+          drawVerticalLine: true,
+          horizontalInterval: 0.1,
+          verticalInterval: 4,
+        ),
+        titlesData: FlTitlesData(
+          show: true,
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 30,
+              getTitlesWidget: (value, meta) {
+                String text = '';
+                if (value.toInt() == 12) {
+                  text = '12.00';
+                } else if (value.toInt() == 18) {
+                  text = '18.00';
+                } else if (value.toInt() == 22) {
+                  text = '22.00';
+                }
+                return Text(
+                  text,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 12,
+                  ),
+                );
+              },
+              interval: 4,
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.analytics),
-            label: 'Analisis',
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 40,
+              getTitlesWidget: (value, meta) {
+                return Text(
+                  value.toStringAsFixed(1),
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 12,
+                  ),
+                );
+              },
+              interval: 0.1,
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profil',
+          rightTitles: AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          topTitles: AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+        ),
+        borderData: FlBorderData(
+          show: true,
+          border: Border.all(color: const Color(0xff37434d)),
+        ),
+        minX: 12,
+        maxX: 22,
+        minY: 0.2,
+        maxY: 0.6,
+        lineBarsData: [
+          LineChartBarData(
+            spots: [
+              FlSpot(12, 0.42),
+              FlSpot(14, 0.36),
+              FlSpot(16, 0.38),
+              FlSpot(18, 0.42),
+              FlSpot(20, 0.46),
+              FlSpot(22, 0.28),
+            ],
+            isCurved: true,
+            color: Colors.blue,
+            barWidth: 2,
+            dotData: FlDotData(show: false),
+            belowBarData: BarAreaData(show: false),
           ),
         ],
+        extraLinesData: ExtraLinesData(
+          horizontalLines: [
+            HorizontalLine(
+              y: 0.35,
+              color: Colors.red.withOpacity(0.8),
+              strokeWidth: 1,
+              label: HorizontalLineLabel(
+                show: true,
+                padding: const EdgeInsets.only(left: 10),
+                style: TextStyle(color: Colors.red, fontSize: 10),
+                labelResolver: (_) => 'sedang',
+              ),
+            ),
+            HorizontalLine(
+              y: 0.22,
+              color: Colors.red.withOpacity(0.8),
+              strokeWidth: 1,
+              label: HorizontalLineLabel(
+                show: true,
+                alignment: Alignment.topRight,
+                padding: const EdgeInsets.only(right: 5),
+                style: TextStyle(color: Colors.red, fontSize: 10),
+                labelResolver: (_) => 'rendah',
+              ),
+            ),
+          ],
+        ),
       ),
+    );
+  }
+
+  Widget _buildUsageTable() {
+    return Table(
+      border: TableBorder(
+        horizontalInside: BorderSide(
+          width: 1,
+          color: Colors.grey.shade300,
+          style: BorderStyle.solid,
+        ),
+        bottom: BorderSide(
+          width: 1,
+          color: Colors.grey.shade300,
+          style: BorderStyle.solid,
+        ),
+      ),
+      columnWidths: {
+        0: FlexColumnWidth(1.2),
+        1: FlexColumnWidth(1),
+        2: FlexColumnWidth(1),
+      },
+      children: [
+        TableRow(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Text(
+                'Tanggal',
+                style: TextStyle(fontWeight: FontWeight.w500),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Text(
+                'Energy',
+                style: TextStyle(fontWeight: FontWeight.w500),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Text(
+                'Biaya',
+                style: TextStyle(fontWeight: FontWeight.w500),
+              ),
+            ),
+          ],
+        ),
+        TableRow(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12.0),
+              child: Text('24-2-2025'),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12.0),
+              child: Text('30 Kwh'),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12.0),
+              child: Text('Rp 12.000'),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
